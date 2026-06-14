@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Coltura design tokens
+   Ported from the Claude Design handoff (tokens/colors.css,
+   typography.css, spacing.css). This is the raw source of truth;
+   tailwind.config.ts exposes these as utilities.
+   ============================================================ */
+:root {
+  /* Surfaces (warm, never pure white) */
+  --paper: #f5f1e8;
+  --paper-wash: #ede8dd;
+  --paper-deep: #e7e1d4;
+  --paper-edge: #efeadf;
+  --paper-white: #ffffff;
+
+  /* Ink (warm graphite, never pure black) */
+  --ink: #1b1a17;
+  --ink-strong: #0e0d0b;
+  --fg-muted: #4a4943;
+  --fg-quiet: #8b8983;
+  --fg-faint: #a8a49b;
+  --fg-on-ink: #f5f1e8;
+
+  /* Rules & borders */
+  --rule: #d9d4c8;
+  --rule-soft: #e4dece;
+  --rule-strong: #c5bfb1;
+
+  /* Lagoon (primary) — the wedding teal */
+  --lagoon: #1f9aa6;
+  --lagoon-strong: #167e88;
+  --lagoon-soft: #5fc1cb;
+  --lagoon-wash: #c4e6e8;
+
+  /* Orchid gold — the bloom's throat; the single jewel accent */
+  --gold: #c99a3a;
+  --gold-soft: #cdb45f;
+
+  /* Wedding-palette accents — these ENCODE collection types */
+  --coral: #e08560; /* bouquets / warmth */
+  --green: #36502f; /* foraged / botanical */
+  --wine: #c03a5c; /* alerts, special markers */
+  --stone: #9b8e78; /* dried / seed specimens */
+
+  /* Semantic */
+  --primary: var(--lagoon);
+  --accent: var(--gold);
+  --focus: #5b6b85;
+  --success: var(--green);
+  --warn: var(--coral);
+  --error: var(--wine);
+
+  /* Tints for hover / press / selected */
+  --hover-tint: rgba(27, 26, 23, 0.04);
+  --press-tint: rgba(27, 26, 23, 0.08);
+  --selected-tint: rgba(31, 154, 166, 0.1);
+
+  /* One quiet shadow (floating menus & modals only) + the lagoon icon shadow */
+  --shadow-1: 0 1px 2px rgba(27, 26, 23, 0.06), 0 4px 12px rgba(27, 26, 23, 0.04);
+  --shadow-icon: 0 6px 18px rgba(31, 154, 166, 0.28);
+
+  /* Type families — loaded via the stylesheet link in layout.tsx */
+  --font-display: "Newsreader", Georgia, serif;
+  --font-sans: "Geist", system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  /* Motion — fast and almost imperceptible */
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* Focus is always visible — 2px desaturated-indigo ring, offset 2px */
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  /* Category labels use small caps (bouquets, foraged, pressings) */
+  .smallcaps {
+    font-variant-caps: small-caps;
+    font-feature-settings: "smcp";
+  }
+  /* Mono metadata: dates, counts, coordinates */
+  .meta {
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  /* The faint paper grid behind cards — the only texture */
+  .grid-bg {
+    background-image: linear-gradient(var(--rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: 0.4;
+  }
+}

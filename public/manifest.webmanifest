@@ -1,0 +1,17 @@
+{
+  "name": "Coltura",
+  "short_name": "Coltura",
+  "description": "A keeping place. An archive for the things you make and find.",
+  "start_url": "/finds",
+  "display": "standalone",
+  "background_color": "#F5F1E8",
+  "theme_color": "#1F9AA6",
+  "icons": [
+    {
+      "src": "/brand/coltura-app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
