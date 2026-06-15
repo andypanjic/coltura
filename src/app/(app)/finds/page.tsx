@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/app/AppHeader";
 import { SpecimenCard } from "@/components/app/SpecimenCard";
+import { OrchidSpray } from "@/components/brand/Brand";
 import { COLLECTIONS } from "@/lib/collections";
 import { allSpecimens } from "@/lib/db";
 import type { Specimen } from "@/lib/types";
@@ -74,7 +75,12 @@ export default function FindsPage() {
   }, [activeCategory, specimens]);
 
   const collectionCount = new Set(specimens.map(s => s.collection)).size;
-  const metaText = `${specimens.length} specimen${specimens.length !== 1 ? 's' : ''} · ${collectionCount} collection${collectionCount !== 1 ? 's' : ''}`;
+  const metaText =
+    specimens.length === 0
+      ? undefined
+      : `${specimens.length} specimen${specimens.length !== 1 ? "s" : ""}${
+          collectionCount ? ` · ${collectionCount} collection${collectionCount !== 1 ? "s" : ""}` : ""
+        }`;
 
   return (
     <>
@@ -92,7 +98,8 @@ export default function FindsPage() {
             <p className="font-display text-lg italic text-fg-muted">Loading...</p>
           </div>
         ) : filteredSpecimens.length === 0 ? (
-          <div className="rounded-card border border-dashed border-rule-strong bg-paper-edge px-6 py-12 text-center">
+          <div className="rounded-card border border-dashed border-rule-strong bg-paper-edge px-6 py-14 text-center">
+            <OrchidSpray size={46} className="mx-auto mb-4 block opacity-50" />
             <p className="font-display text-lg italic text-fg-muted">
               {activeCategory === "All" ? "Nothing kept yet." : `No ${activeCategory.toLowerCase()} yet.`}
             </p>
