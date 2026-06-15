@@ -8,12 +8,12 @@
  * The atomic unit is a Specimen: a photograph and a quiet label.
  */
 
-export type CollectionKind =
-  | "bouquets"
-  | "foraged"
-  | "pressings"
-  | "knitting"
-  | "ceramics";
+/**
+ * A collection's kind. Open by design (Stage 3): the real set lives in the
+ * craft profiles (crafts.ts), so adding a craft never edits this type. Known
+ * kinds today: bouquets, foraged, pressings, ceramics, knitting, watercolors.
+ */
+export type CollectionKind = string;
 
 /** Status lifecycle — only meaningful where it applies (e.g. knitting). */
 export type SpecimenStatus =

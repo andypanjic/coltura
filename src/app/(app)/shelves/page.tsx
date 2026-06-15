@@ -6,7 +6,7 @@ import { COLLECTIONS } from "@/lib/collections";
 export default function ShelvesPage() {
   return (
     <>
-      <AppHeader title="Shelves" meta="6 collections" />
+      <AppHeader title="Shelves" meta={`${COLLECTIONS.length} collections`} />
       <section className="px-5 py-4">
         <div className="grid grid-cols-2 gap-3">
           {COLLECTIONS.map((c) => (

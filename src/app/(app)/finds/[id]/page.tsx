@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import { COLLECTIONS } from "@/lib/collections";
+import { COLLECTIONS, fieldsForCollection } from "@/lib/collections";
 import { getSpecimen } from "@/lib/db";
 import type { Specimen } from "@/lib/types";
 
@@ -76,6 +76,11 @@ export default function SpecimenDetailPage() {
     ? new Date(specimen.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : "";
   const hasNotes = specimen.notes.length > 0 || !!specimen.body;
+  const fieldDefs = fieldsForCollection(specimen.collection);
+  const fieldLabel = (k: string) => fieldDefs.find((d) => d.key === k)?.label ?? k;
+  const fieldEntries = specimen.fields
+    ? Object.entries(specimen.fields).filter(([, v]) => v != null && String(v).trim() !== "")
+    : [];
 
   return (
     <div className="pb-24">
@@ -129,6 +134,19 @@ export default function SpecimenDetailPage() {
             </div>
           )}
         </div>
+
+        {fieldEntries.length > 0 && (
+          <div className="space-y-1.5">
+            {fieldEntries.map(([k, v]) => (
+              <div key={k} className="flex gap-3 text-sm">
+                <span className="w-24 shrink-0 pt-0.5 font-mono text-[11px] uppercase tracking-wide text-fg-muted">
+                  {fieldLabel(k)}
+                </span>
+                <span className="text-ink">{String(v)}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {specimen.body && (
           <p className="whitespace-pre-wrap text-sm leading-body text-fg-quiet">{specimen.body}</p>

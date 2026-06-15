@@ -1,21 +1,18 @@
-import type { CollectionKind } from "./types";
-
 /**
- * Collection definitions. Color ENCODES the collection type — it never just
- * decorates. These accent tokens come straight from the design system.
+ * Collections are now derived from craft profiles (see crafts.ts) — this module
+ * stays as the stable import surface the UI already uses. Color ENCODES the
+ * collection type; it never just decorates.
  */
-export const COLLECTIONS: {
-  kind: CollectionKind;
-  label: string;
-  /** CSS var name for the encoded accent dot. */
-  accent: string;
-}[] = [
-  { kind: "bouquets", label: "Bouquets", accent: "var(--coral)" },
-  { kind: "foraged", label: "Foraged", accent: "var(--green)" },
-  { kind: "pressings", label: "Pressings", accent: "var(--stone)" },
-  { kind: "knitting", label: "Knitting", accent: "var(--lagoon)" },
-  { kind: "ceramics", label: "Ceramics", accent: "var(--gold)" },
-];
+import { COLLECTIONS } from "./crafts";
+
+export {
+  COLLECTIONS,
+  CRAFTS,
+  craftForCollection,
+  fieldsForCollection,
+  collectionDef,
+} from "./crafts";
+export type { CollectionDef, CraftField, CraftProfile } from "./crafts";
 
 /** Category chips shown on the Finds feed (All + each collection). */
 export const CHIPS = ["All", ...COLLECTIONS.map((c) => c.label)] as const;

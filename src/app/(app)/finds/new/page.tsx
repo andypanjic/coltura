@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AppHeader } from "@/components/app/AppHeader";
-import { COLLECTIONS } from "@/lib/collections";
+import { COLLECTIONS, fieldsForCollection } from "@/lib/collections";
 import { putSpecimen } from "@/lib/db";
 import { extractPaletteFromFile } from "@/lib/palette";
 import type { Specimen, PaletteColor, MediaItem, CollectionKind, Note } from "@/lib/types";
@@ -33,6 +33,10 @@ export default function NewSpecimenPage() {
     tags: "",
     notes: ""
   });
+
+  // Craft-specific structured fields for the selected collection (Stage 3).
+  const [craftFields, setCraftFields] = useState<Record<string, string>>({});
+  const craftDefs = fieldsForCollection(formData.collection);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -101,10 +105,17 @@ export default function NewSpecimenPage() {
         capturedAt: formData.date || now
       };
 
+      const fields: Record<string, string> = {};
+      for (const d of craftDefs) {
+        const v = craftFields[d.key]?.trim();
+        if (v) fields[d.key] = v;
+      }
+
       const specimen: Specimen = {
         id,
         name: formData.name,
         collection: formData.collection as CollectionKind,
+        fields: Object.keys(fields).length ? fields : undefined,
         date: formData.date || undefined,
         place: formData.place || undefined,
         recipient: formData.recipient || undefined,
@@ -250,6 +261,40 @@ export default function NewSpecimenPage() {
               ))}
             </select>
           </div>
+
+          {craftDefs.length > 0 && (
+            <div className="space-y-3 rounded-card border border-rule-soft bg-paper-edge p-3">
+              <p className="font-mono text-[11px] uppercase tracking-wide text-fg-faint">
+                {COLLECTIONS.find((c) => c.kind === formData.collection)?.label} details
+              </p>
+              {craftDefs.map((d) => (
+                <label key={d.key} className="block">
+                  <span className="mb-1 block font-mono text-xs uppercase tracking-wide text-fg-muted">{d.label}</span>
+                  {d.type === "select" ? (
+                    <select
+                      value={craftFields[d.key] ?? ""}
+                      onChange={(e) => setCraftFields((p) => ({ ...p, [d.key]: e.target.value }))}
+                      className="w-full rounded-input border border-rule bg-paper-white px-3 py-2 text-sm focus:border-lagoon focus:outline-none"
+                    >
+                      <option value="">—</option>
+                      {d.options?.map((o) => (
+                        <option key={o} value={o}>{o}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type={d.type === "number" ? "number" : "text"}
+                      value={craftFields[d.key] ?? ""}
+                      onChange={(e) => setCraftFields((p) => ({ ...p, [d.key]: e.target.value }))}
+                      placeholder={d.placeholder}
+                      className="w-full rounded-input border border-rule bg-paper-white px-3 py-2 text-sm placeholder:italic placeholder:text-fg-faint focus:border-lagoon focus:outline-none"
+                    />
+                  )}
+                  {d.hint && <span className="mt-1 block text-[11px] text-fg-faint">{d.hint}</span>}
+                </label>
+              ))}
+            </div>
+          )}
 
           <div>
             <label htmlFor="recipient" className="mb-2 block font-mono text-xs uppercase tracking-wide text-fg-muted">
