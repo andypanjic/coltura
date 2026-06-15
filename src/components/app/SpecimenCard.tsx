@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { COLLECTIONS } from "@/lib/collections";
 import type { Specimen } from "@/lib/types";
 
@@ -11,7 +12,10 @@ export function SpecimenCard({ specimen }: { specimen: Specimen }) {
   }) : '';
   
   return (
-    <article className="group overflow-hidden rounded-card border border-rule bg-paper-white transition-colors duration-1 hover:bg-paper-wash">
+    <Link
+      href={`/finds/${specimen.id}`}
+      className="group block overflow-hidden rounded-card border border-rule bg-paper-white transition-colors duration-1 hover:bg-paper-wash"
+    >
       {primaryImage && (
         <div className="relative aspect-square overflow-hidden bg-paper">
           <img 
@@ -56,6 +60,6 @@ export function SpecimenCard({ specimen }: { specimen: Specimen }) {
           </div>
         )}
       </div>
-    </article>
+    </Link>
   );
 }
