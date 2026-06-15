@@ -62,6 +62,19 @@ export async function specimensByCollection(kind: string): Promise<Specimen[]> {
   return (await getDB()).getAllFromIndex("specimens", "by-collection", kind);
 }
 
+export async function allMaterials(): Promise<Material[]> {
+  const db = await getDB();
+  return db.getAll("materials");
+}
+
+export async function getMaterial(id: string): Promise<Material | undefined> {
+  return (await getDB()).get("materials", id);
+}
+
+export async function putMaterial(m: Material): Promise<void> {
+  await (await getDB()).put("materials", m);
+}
+
 /** One-tap export — the whole archive as a single JSON blob. */
 export async function exportArchive(): Promise<Blob> {
   const db = await getDB();

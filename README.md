@@ -35,6 +35,14 @@ Copy `.env.example` to `.env.local`. Nothing is required to run the local-first
 app shell; `ANTHROPIC_API_KEY` powers the Stage-1/2 AI features (handwriting
 transcription, ball-band OCR, synthesis) from server-side routes only.
 
+```bash
+# .env.local
+ANTHROPIC_API_KEY=your-api-key-here
+```
+
+The ball-band OCR feature at `/stash/new` requires this key to extract yarn details
+from photographs. Without it, the OCR will return a 501 error with instructions.
+
 ## Project layout
 
 See **`CLAUDE.md`** for the full map, the design-system rules, the roadmap, and the
