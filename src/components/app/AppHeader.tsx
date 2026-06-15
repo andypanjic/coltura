@@ -9,8 +9,8 @@ export function AppHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <header className="sticky top-0 z-30 bg-paper">
-      <div className="px-5 pb-3 pt-6">
+    <header className="bg-paper">
+      <div className="px-5 pb-3 pt-5">
         <h1 className="font-display text-[27px] font-medium tracking-display text-ink-strong">
           {title}
         </h1>
