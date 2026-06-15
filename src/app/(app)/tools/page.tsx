@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { AppHeader } from "@/components/app/AppHeader";
 import {
@@ -11,8 +11,10 @@ import {
   type StitchPattern,
 } from "@/lib/knitmath";
 import { substituteYarn, YARN_WEIGHTS } from "@/lib/substitute";
+import { matchStashToPalette, closenessLabel } from "@/lib/paletteMatch";
+import { extractPaletteFromFile } from "@/lib/palette";
 import { allMaterials } from "@/lib/db";
-import type { Material } from "@/lib/types";
+import type { Material, PaletteColor } from "@/lib/types";
 
 const num = (s: string) => {
   const n = parseFloat(s);
@@ -267,6 +269,104 @@ function YarnSubstitution() {
   );
 }
 
+function PaletteMatch() {
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [target, setTarget] = useState<PaletteColor[]>([]);
+  const [imageUrl, setImageUrl] = useState("");
+  const [extracting, setExtracting] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    allMaterials()
+      .then(setMaterials)
+      .catch((e) => console.error("Failed to load stash:", e))
+      .finally(() => setLoaded(true));
+  }, []);
+
+  const onImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageUrl(URL.createObjectURL(file));
+    setExtracting(true);
+    try {
+      setTarget(await extractPaletteFromFile(file, 5));
+    } finally {
+      setExtracting(false);
+    }
+  };
+
+  const yarnsWithColor = materials.filter((m) => m.kind === "yarn" && m.palette && m.palette.length > 0);
+  const matches = matchStashToPalette(materials, target);
+
+  return (
+    <Card title="Palette match" blurb="Photograph an inspiration image; find the stash yarns whose colors come closest.">
+      <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={onImage} className="hidden" />
+
+      {imageUrl ? (
+        <div
+          onClick={() => fileRef.current?.click()}
+          className="relative overflow-hidden rounded-card border border-rule bg-paper-edge"
+        >
+          <img src={imageUrl} alt="Inspiration" className="h-40 w-full object-cover" />
+          {target.length > 0 && (
+            <div className="absolute bottom-2 left-2 flex gap-1 rounded-pill border border-rule bg-paper-white/90 px-2 py-1.5 backdrop-blur-sm">
+              {target.map((c, i) => (
+                <div key={i} className="h-4 w-4 rounded-full border border-rule-soft" style={{ backgroundColor: c.hex }} title={c.hex} />
+              ))}
+            </div>
+          )}
+          {extracting && (
+            <div className="absolute inset-0 flex items-center justify-center bg-paper-white/70 backdrop-blur-sm">
+              <p className="font-display italic text-fg-muted">Reading colors…</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          className="flex h-28 w-full items-center justify-center rounded-card border-2 border-dashed border-rule-strong bg-paper-edge text-fg-muted transition-colors duration-1 hover:bg-paper-wash"
+        >
+          <div className="text-center">
+            <p className="font-display text-base italic">Add an inspiration image</p>
+            <p className="mt-1 text-sm text-fg-quiet">We&apos;ll match its colors to your stash</p>
+          </div>
+        </button>
+      )}
+
+      {target.length > 0 &&
+        (loaded && yarnsWithColor.length === 0 ? (
+          <div className="rounded-card border border-dashed border-rule-strong bg-paper-edge px-4 py-6 text-center">
+            <p className="font-display text-base italic text-fg-muted">No yarn colors in your stash yet.</p>
+            <Link href="/stash/new" className="mt-2 inline-block text-sm text-lagoon hover:underline">
+              Add yarn with ball-band OCR →
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {matches.slice(0, 8).map((m) => (
+              <div key={m.material.id} className="flex items-center gap-3 rounded-card border border-rule-soft bg-paper-edge px-3 py-2.5">
+                <div className="flex shrink-0 items-center gap-1">
+                  <span className="h-7 w-7 rounded-full border border-rule" style={{ backgroundColor: m.targetHex }} title={`image ${m.targetHex}`} />
+                  <span className="font-mono text-fg-faint">→</span>
+                  <span className="h-7 w-7 rounded-full border border-rule" style={{ backgroundColor: m.yarnHex }} title={`yarn ${m.yarnHex}`} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm text-ink">{m.material.name}</div>
+                  <div className="font-mono text-[11px] text-fg-muted">
+                    {closenessLabel(m.distance)}
+                    {m.material.colorway ? ` · ${m.material.colorway}` : ""}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+    </Card>
+  );
+}
+
 /** Tools — knitting math (Stage 2). Deterministic aids, not authorities. */
 export default function ToolsPage() {
   return (
@@ -277,6 +377,7 @@ export default function ToolsPage() {
         <GaugeConverter />
         <YardageEstimator />
         <YarnSubstitution />
+        <PaletteMatch />
         <p className="px-1 text-[12px] leading-snug text-fg-faint">
           A swatch beats a calculator — always check gauge against your own
           knitting. Yardage is a rough guide; keep a margin.
