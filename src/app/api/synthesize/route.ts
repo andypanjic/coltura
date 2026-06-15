@@ -69,7 +69,9 @@ export async function POST(req: Request) {
             role: "user",
             content: `Summarize the notes for this craft/knitting project${
               name ? ` ("${name}")` : ""
-            } into a few clear sentences a maker can skim later. Capture the essentials present: yarn, needles, gauge, modifications, recipient, timeline, and any lessons noted. Do not invent details that aren't in the notes. Plain prose, no preamble, no headings.\n\n${combined}`,
+            } into a few clear sentences a maker can skim later, capturing whatever is present (yarn, needles, gauge, modifications, recipient, timeline, lessons).
+
+Write ONLY the summary itself, in plain prose. No preamble, no headings, no bullet points. Summarize only what the notes actually say — but do NOT mention, list, or apologize for anything that is missing, do NOT ask for more information, and do NOT add caveats about completeness. If the notes are brief, write a brief summary; that is fine.\n\n${combined}`,
           },
         ],
       }),
