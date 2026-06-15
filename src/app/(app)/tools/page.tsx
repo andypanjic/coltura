@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { AppHeader } from "@/components/app/AppHeader";
 import {
   castOnStitches,
@@ -9,6 +10,9 @@ import {
   estimateYardage,
   type StitchPattern,
 } from "@/lib/knitmath";
+import { substituteYarn, YARN_WEIGHTS } from "@/lib/substitute";
+import { allMaterials } from "@/lib/db";
+import type { Material } from "@/lib/types";
 
 const num = (s: string) => {
   const n = parseFloat(s);
@@ -21,12 +25,14 @@ function Field({
   onChange,
   placeholder,
   hint,
+  type = "number",
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   hint?: string;
+  type?: "number" | "text";
 }) {
   return (
     <label className="block">
@@ -34,12 +40,12 @@ function Field({
         {label}
       </span>
       <input
-        type="number"
-        inputMode="decimal"
+        type={type}
+        inputMode={type === "number" ? "decimal" : "text"}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-input border border-rule bg-paper-white px-3 py-2 text-sm tabular-nums placeholder:italic placeholder:text-fg-faint focus:border-lagoon focus:outline-none"
+        className={`w-full rounded-input border border-rule bg-paper-white px-3 py-2 text-sm placeholder:italic placeholder:text-fg-faint focus:border-lagoon focus:outline-none ${type === "number" ? "tabular-nums" : ""}`}
       />
       {hint && <span className="mt-1 block text-[11px] text-fg-faint">{hint}</span>}
     </label>
@@ -181,6 +187,86 @@ function YardageEstimator() {
   );
 }
 
+function YarnSubstitution() {
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [weight, setWeight] = useState("4");
+  const [yardage, setYardage] = useState("400");
+  const [fiber, setFiber] = useState("");
+
+  useEffect(() => {
+    allMaterials()
+      .then(setMaterials)
+      .catch((e) => console.error("Failed to load stash:", e))
+      .finally(() => setLoaded(true));
+  }, []);
+
+  const yarns = materials.filter((m) => m.kind === "yarn");
+  const matches = substituteYarn(materials, {
+    weight: weight === "" ? undefined : num(weight),
+    yardageNeeded: yardage ? num(yardage) : undefined,
+    fiber: fiber.trim() || undefined,
+  });
+
+  return (
+    <Card title="Yarn substitution" blurb="Match a pattern's yarn against your stash by weight, yardage, and fiber.">
+      <div className="grid grid-cols-2 gap-3">
+        <label className="block">
+          <span className="mb-1 block font-mono text-[11px] uppercase tracking-wide text-fg-muted">Target weight</span>
+          <select
+            value={weight}
+            onChange={(e) => setWeight(e.target.value)}
+            className="w-full rounded-input border border-rule bg-paper-white px-3 py-2 text-sm focus:border-lagoon focus:outline-none"
+          >
+            {YARN_WEIGHTS.map((w, i) => (
+              <option key={i} value={i}>{i} · {w}</option>
+            ))}
+          </select>
+        </label>
+        <Field label="Yardage needed" value={yardage} onChange={setYardage} hint="total yards" />
+      </div>
+      <Field label="Fiber" type="text" value={fiber} onChange={setFiber} placeholder="optional — e.g. wool, merino" />
+
+      {!loaded ? (
+        <div className="rounded-card border border-dashed border-rule-strong bg-paper-edge px-4 py-6 text-center">
+          <p className="font-display text-base italic text-fg-muted">Reading your stash…</p>
+        </div>
+      ) : yarns.length === 0 ? (
+        <div className="rounded-card border border-dashed border-rule-strong bg-paper-edge px-4 py-6 text-center">
+          <p className="font-display text-base italic text-fg-muted">No yarn in your stash yet.</p>
+          <Link href="/stash/new" className="mt-2 inline-block text-sm text-lagoon hover:underline">
+            Add yarn with ball-band OCR →
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {matches.map((m) => (
+            <div key={m.material.id} className="rounded-card border border-rule-soft bg-paper-edge px-3 py-2.5">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="text-sm text-ink">{m.material.name}</span>
+                {m.enoughYardage === true && (
+                  <span className="shrink-0 rounded-pill bg-lagoon px-2 py-0.5 text-[10px] uppercase text-fg-on-ink">enough</span>
+                )}
+                {m.enoughYardage === false && (
+                  <span className="shrink-0 rounded-pill border border-rule px-2 py-0.5 text-[10px] uppercase text-fg-muted">short</span>
+                )}
+              </div>
+              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 font-mono text-[11px] text-fg-muted">
+                <span>{m.material.weight != null ? `${m.material.weight} · ${YARN_WEIGHTS[m.material.weight] ?? "?"}` : "weight —"}</span>
+                <span>{m.availableYards > 0 ? `${m.availableYards} yds on hand` : "yardage —"}</span>
+                {m.material.colorway && <span>{m.material.colorway}</span>}
+              </div>
+              {m.reasons.length > 0 && (
+                <div className="mt-1 text-[11px] leading-snug text-fg-quiet">{m.reasons.join(" · ")}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
+  );
+}
+
 /** Tools — knitting math (Stage 2). Deterministic aids, not authorities. */
 export default function ToolsPage() {
   return (
@@ -190,6 +276,7 @@ export default function ToolsPage() {
         <CastOnCalc />
         <GaugeConverter />
         <YardageEstimator />
+        <YarnSubstitution />
         <p className="px-1 text-[12px] leading-snug text-fg-faint">
           A swatch beats a calculator — always check gauge against your own
           knitting. Yardage is a rough guide; keep a margin.
