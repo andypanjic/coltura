@@ -11,7 +11,7 @@
 /**
  * A collection's kind. Open by design (Stage 3): the real set lives in the
  * craft profiles (crafts.ts), so adding a craft never edits this type. Known
- * kinds today: bouquets, foraged, pressings, ceramics, knitting, watercolors.
+ * kinds today: knitting, watercolors.
  */
 export type CollectionKind = string;
 

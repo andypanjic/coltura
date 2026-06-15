@@ -29,7 +29,7 @@ export default function NewSpecimenPage() {
     date: "",
     place: "",
     recipient: "",
-    collection: "bouquets",
+    collection: "knitting",
     tags: "",
     notes: ""
   });

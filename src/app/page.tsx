@@ -48,7 +48,7 @@ const FEATURES = [
   },
   {
     title: "Shelves, not feeds",
-    body: "Group entries into bouquets, pressings, foraged finds, and works in progress. Nothing scrolls forever.",
+    body: "Keep your knitting and watercolor work on its own shelf, with the depth each craft needs. Nothing scrolls forever.",
     icon: (
       <path d="M3 7.5a1.5 1.5 0 0 1 1.5-1.5H9l2 2h7.5A1.5 1.5 0 0 1 21 9.5v8a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5z" />
     ),

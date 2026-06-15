@@ -37,17 +37,6 @@ export interface CraftProfile {
 
 export const CRAFTS: CraftProfile[] = [
   {
-    id: "general",
-    label: "General",
-    collections: [
-      { kind: "bouquets", label: "Bouquets", accent: "var(--coral)" },
-      { kind: "foraged", label: "Foraged", accent: "var(--green)" },
-      { kind: "pressings", label: "Pressings", accent: "var(--stone)" },
-      { kind: "ceramics", label: "Ceramics", accent: "var(--gold)" },
-    ],
-    fields: [],
-  },
-  {
     id: "knitting",
     label: "Knitting",
     collections: [{ kind: "knitting", label: "Knitting", accent: "var(--lagoon)" }],
