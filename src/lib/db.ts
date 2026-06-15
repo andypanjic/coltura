@@ -86,3 +86,53 @@ export async function exportArchive(): Promise<Blob> {
   };
   return new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
 }
+
+export interface ImportResult {
+  specimens: number;
+  materials: number;
+}
+
+/**
+ * Restore from an exported archive (the JSON `exportArchive` produces).
+ * Upserts by id — a merge, never a wipe — so importing onto an existing
+ * archive is safe and re-importing is idempotent. Throws on malformed input.
+ */
+export async function importArchive(json: string): Promise<ImportResult> {
+  let data: { specimens?: Specimen[]; materials?: Material[] };
+  try {
+    data = JSON.parse(json);
+  } catch {
+    throw new Error("That file isn't valid JSON.");
+  }
+  if (!data || (!Array.isArray(data.specimens) && !Array.isArray(data.materials))) {
+    throw new Error("That doesn't look like a Coltura export.");
+  }
+
+  const db = await getDB();
+  let specimens = 0;
+  let materials = 0;
+
+  if (Array.isArray(data.specimens)) {
+    const tx = db.transaction("specimens", "readwrite");
+    for (const s of data.specimens) {
+      if (s && typeof s.id === "string") {
+        await tx.store.put(s);
+        specimens++;
+      }
+    }
+    await tx.done;
+  }
+
+  if (Array.isArray(data.materials)) {
+    const tx = db.transaction("materials", "readwrite");
+    for (const m of data.materials) {
+      if (m && typeof m.id === "string") {
+        await tx.store.put(m);
+        materials++;
+      }
+    }
+    await tx.done;
+  }
+
+  return { specimens, materials };
+}

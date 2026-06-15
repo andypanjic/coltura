@@ -1,11 +1,17 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { ServiceWorkerRegister } from "@/components/app/ServiceWorkerRegister";
 
 export const metadata: Metadata = {
   title: "Coltura — a keeping place",
   description:
     "Coltura is an archive for the things you make and find. Photograph each one, add a few details, and file it on a shelf you can return to.",
   manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Coltura",
+    statusBarStyle: "default",
+  },
   icons: {
     icon: "/brand/orchid-bloom.svg",
     apple: "/brand/coltura-app-icon.svg",
@@ -36,7 +42,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <ServiceWorkerRegister />
+        {children}
+      </body>
     </html>
   );
 }
