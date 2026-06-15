@@ -7,15 +7,22 @@ import { AppHeader } from "@/components/app/AppHeader";
 import { COLLECTIONS } from "@/lib/collections";
 import { putSpecimen } from "@/lib/db";
 import { extractPaletteFromFile } from "@/lib/palette";
-import type { Specimen, PaletteColor, MediaItem, CollectionKind } from "@/lib/types";
+import type { Specimen, PaletteColor, MediaItem, CollectionKind, Note } from "@/lib/types";
 
 export default function NewSpecimenPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const noteFileInputRef = useRef<HTMLInputElement>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [palette, setPalette] = useState<PaletteColor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Handwritten note: the photo is the source of truth; transcript/entities are a fallible, editable index.
+  const [noteImageUrl, setNoteImageUrl] = useState<string>("");
+  const [noteTranscript, setNoteTranscript] = useState<string>("");
+  const [noteEntities, setNoteEntities] = useState<Record<string, string>>({});
+  const [isTranscribing, setIsTranscribing] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -37,6 +44,38 @@ export default function NewSpecimenPage() {
 
     const colors = await extractPaletteFromFile(file, 5);
     setPalette(colors);
+  };
+
+  const handleNoteImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    const dataUrl = await new Promise<string>((resolve) => {
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(file);
+    });
+    setNoteImageUrl(dataUrl);
+
+    setIsTranscribing(true);
+    try {
+      const res = await fetch("/api/transcribe", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ image: dataUrl }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setNoteTranscript(data.transcript ?? "");
+        setNoteEntities(data.entities ?? {});
+      } else {
+        console.error("Transcription failed:", res.status);
+      }
+    } catch (err) {
+      console.error("Transcription error:", err);
+    } finally {
+      setIsTranscribing(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,7 +109,15 @@ export default function NewSpecimenPage() {
         place: formData.place || undefined,
         recipient: formData.recipient || undefined,
         tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
-        notes: [],
+        notes: noteImageUrl
+          ? [{
+              id: `note-${Date.now()}`,
+              imageUrl: noteImageUrl,
+              transcript: noteTranscript || undefined,
+              entities: Object.keys(noteEntities).length ? noteEntities : undefined,
+              createdAt: now,
+            } as Note]
+          : [],
         media: [mediaItem],
         palette,
         body: formData.notes || undefined,
@@ -244,6 +291,74 @@ export default function NewSpecimenPage() {
               rows={3}
               className="w-full rounded-input border border-rule bg-paper-white px-3 py-2 text-sm placeholder:italic placeholder:text-fg-faint focus:border-lagoon focus:outline-none"
             />
+          </div>
+
+          <div>
+            <label className="mb-2 block font-mono text-xs uppercase tracking-wide text-fg-muted">
+              Handwritten note
+            </label>
+            <input
+              ref={noteFileInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleNoteImageChange}
+              className="hidden"
+            />
+
+            {noteImageUrl ? (
+              <div className="space-y-3">
+                <div
+                  onClick={() => noteFileInputRef.current?.click()}
+                  className="relative overflow-hidden rounded-card border border-rule bg-paper-edge"
+                >
+                  <img src={noteImageUrl} alt="Handwritten note" className="max-h-56 w-full object-contain" />
+                  {isTranscribing && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-paper-white/70 backdrop-blur-sm">
+                      <p className="font-display text-base italic text-fg-muted">Transcribing…</p>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="transcript" className="mb-1 block font-mono text-[11px] uppercase tracking-wide text-fg-faint">
+                    Transcript · editable
+                  </label>
+                  <textarea
+                    id="transcript"
+                    value={noteTranscript}
+                    onChange={(e) => setNoteTranscript(e.target.value)}
+                    placeholder={isTranscribing ? "Reading the note…" : "Transcript will appear here — edit freely"}
+                    rows={4}
+                    className="w-full rounded-input border border-rule bg-paper-white px-3 py-2 text-sm placeholder:italic placeholder:text-fg-faint focus:border-lagoon focus:outline-none"
+                  />
+                </div>
+
+                {Object.keys(noteEntities).length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {Object.entries(noteEntities).map(([k, v]) => (
+                      <span
+                        key={k}
+                        className="smallcaps rounded-pill border border-rule bg-paper-wash px-2 py-1 text-[12px] text-fg-quiet"
+                      >
+                        {k}: {v}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => noteFileInputRef.current?.click()}
+                className="flex h-32 w-full items-center justify-center rounded-card border-2 border-dashed border-rule-strong bg-paper-edge text-fg-muted transition-colors duration-1 hover:bg-paper-wash"
+              >
+                <div className="text-center">
+                  <p className="font-display text-base italic">Photograph a handwritten note</p>
+                  <p className="mt-1 text-sm text-fg-quiet">We&apos;ll transcribe it — the photo stays the original</p>
+                </div>
+              </button>
+            )}
           </div>
         </div>
 
