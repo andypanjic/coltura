@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { AppHeader } from "@/components/app/AppHeader";
 import { SpecimenCard } from "@/components/app/SpecimenCard";
+import { OrchidSpray } from "@/components/brand/Brand";
 import { allSpecimens } from "@/lib/db";
 import { textSearch, colorSearch } from "@/lib/search";
 import { ACCENT_COLORS } from "@/lib/color";
@@ -151,7 +152,8 @@ export default function SearchPage() {
               <p className="font-display text-lg italic text-fg-muted">Loading specimens…</p>
             </div>
           ) : !showResults ? (
-            <div className="rounded-card border border-dashed border-rule-strong bg-paper-edge px-6 py-12 text-center">
+            <div className="rounded-card border border-dashed border-rule-strong bg-paper-edge px-6 py-14 text-center">
+              <OrchidSpray size={46} className="mx-auto mb-4 block opacity-50" />
               <p className="font-display text-lg italic text-fg-muted">
                 What are you looking for?
               </p>
