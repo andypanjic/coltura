@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AppHeader } from "@/components/app/AppHeader";
-import { COLLECTIONS, fieldsForCollection } from "@/lib/collections";
+import { COLLECTIONS, fieldsForCollection, statusesForCollection } from "@/lib/collections";
 import { putSpecimen } from "@/lib/db";
 import { extractPaletteFromFile } from "@/lib/palette";
 import type { Specimen, PaletteColor, MediaItem, CollectionKind, Note } from "@/lib/types";
@@ -37,6 +37,9 @@ export default function NewSpecimenPage() {
   // Craft-specific structured fields for the selected collection (Stage 3).
   const [craftFields, setCraftFields] = useState<Record<string, string>>({});
   const craftDefs = fieldsForCollection(formData.collection);
+
+  const [status, setStatus] = useState("");
+  const statusOptions = statusesForCollection(formData.collection);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -115,6 +118,7 @@ export default function NewSpecimenPage() {
         id,
         name: formData.name,
         collection: formData.collection as CollectionKind,
+        status: status || undefined,
         fields: Object.keys(fields).length ? fields : undefined,
         date: formData.date || undefined,
         place: formData.place || undefined,
@@ -261,6 +265,25 @@ export default function NewSpecimenPage() {
               ))}
             </select>
           </div>
+
+          {statusOptions.length > 0 && (
+            <div>
+              <label htmlFor="status" className="mb-2 block font-mono text-xs uppercase tracking-wide text-fg-muted">
+                Status
+              </label>
+              <select
+                id="status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-full rounded-input border border-rule bg-paper-white px-3 py-2 text-sm focus:border-lagoon focus:outline-none"
+              >
+                <option value="">—</option>
+                {statusOptions.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {craftDefs.length > 0 && (
             <div className="space-y-3 rounded-card border border-rule-soft bg-paper-edge p-3">

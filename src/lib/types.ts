@@ -15,12 +15,12 @@
  */
 export type CollectionKind = string;
 
-/** Status lifecycle — only meaningful where it applies (e.g. knitting). */
-export type SpecimenStatus =
-  | "queue"
-  | "in-progress"
-  | "finished"
-  | "frogged";
+/**
+ * Status lifecycle. Open by design — the vocabulary is craft-specific and lives
+ * in the craft profiles (crafts.ts): e.g. knitting is Queued / In progress /
+ * Finished / Frogged; watercolor is Sketch / In progress / Finished / Set aside.
+ */
+export type SpecimenStatus = string;
 
 /** An extracted color — "the color it kept". Stored as hex + perceptual coords. */
 export interface PaletteColor {

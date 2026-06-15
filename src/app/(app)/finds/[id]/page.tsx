@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import { COLLECTIONS, fieldsForCollection } from "@/lib/collections";
-import { getSpecimen } from "@/lib/db";
+import { COLLECTIONS, fieldsForCollection, statusesForCollection } from "@/lib/collections";
+import { getSpecimen, putSpecimen } from "@/lib/db";
 import type { Specimen } from "@/lib/types";
 
 export default function SpecimenDetailPage() {
@@ -51,6 +51,17 @@ export default function SpecimenDetailPage() {
     }
   };
 
+  const updateStatus = async (next: string) => {
+    if (!specimen) return;
+    const updated = { ...specimen, status: next || undefined, updatedAt: new Date().toISOString() };
+    setSpecimen(updated);
+    try {
+      await putSpecimen(updated);
+    } catch (e) {
+      console.error("Failed to update status:", e);
+    }
+  };
+
   if (specimen === undefined) {
     return (
       <div className="px-5 py-12 text-center">
@@ -81,6 +92,7 @@ export default function SpecimenDetailPage() {
   const fieldEntries = specimen.fields
     ? Object.entries(specimen.fields).filter(([, v]) => v != null && String(v).trim() !== "")
     : [];
+  const statusOptions = statusesForCollection(specimen.collection);
 
   return (
     <div className="pb-24">
@@ -117,6 +129,21 @@ export default function SpecimenDetailPage() {
               <span className="font-mono text-[11px] uppercase text-fg-muted">for {specimen.recipient}</span>
             )}
           </div>
+          {statusOptions.length > 0 && (
+            <div className="mt-3 flex items-center gap-2">
+              <span className="font-mono text-[11px] uppercase tracking-wide text-fg-muted">Status</span>
+              <select
+                value={specimen.status ?? ""}
+                onChange={(e) => updateStatus(e.target.value)}
+                className="rounded-pill border border-rule bg-paper-white px-3 py-1 text-sm text-ink focus:border-lagoon focus:outline-none"
+              >
+                <option value="">—</option>
+                {statusOptions.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+          )}
           {specimen.palette.length > 0 && (
             <div className="mt-3 flex gap-1.5">
               {specimen.palette.map((c, i) => (

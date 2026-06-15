@@ -48,17 +48,22 @@ export function SpecimenCard({ specimen }: { specimen: Specimen }) {
           </p>
         )}
         
-        {collection && (
-          <div className="mt-2 inline-flex items-center gap-1.5">
-            <div 
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: collection.accent }}
-            />
-            <span className="smallcaps text-xs text-fg-quiet">
-              {collection.label}
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          {collection && (
+            <span className="inline-flex items-center gap-1.5">
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: collection.accent }}
+              />
+              <span className="smallcaps text-xs text-fg-quiet">{collection.label}</span>
             </span>
-          </div>
-        )}
+          )}
+          {specimen.status && (
+            <span className="rounded-pill border border-rule px-2 py-0.5 text-[10px] uppercase text-fg-muted">
+              {specimen.status}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );

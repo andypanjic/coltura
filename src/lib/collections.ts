@@ -10,6 +10,7 @@ export {
   CRAFTS,
   craftForCollection,
   fieldsForCollection,
+  statusesForCollection,
   collectionDef,
 } from "./crafts";
 export type { CollectionDef, CraftField, CraftProfile } from "./crafts";

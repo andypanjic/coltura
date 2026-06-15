@@ -33,6 +33,8 @@ export interface CraftProfile {
   collections: CollectionDef[];
   /** Craft-specific fields captured into Specimen.fields. */
   fields: CraftField[];
+  /** Lifecycle vocabulary for this craft (Specimen.status). */
+  statuses: string[];
 }
 
 export const CRAFTS: CraftProfile[] = [
@@ -45,6 +47,7 @@ export const CRAFTS: CraftProfile[] = [
       { key: "needles", label: "Needles", type: "text", placeholder: "e.g. US 7 / 4.5 mm" },
       { key: "gauge", label: "Gauge", type: "text", placeholder: "e.g. 18 sts / 4 in" },
     ],
+    statuses: ["Queued", "In progress", "Finished", "Frogged"],
   },
   {
     // Canonical Stage-3 proof: a whole new craft, added as config + fields only.
@@ -61,6 +64,7 @@ export const CRAFTS: CraftProfile[] = [
       },
       { key: "pigments", label: "Pigments", type: "text", placeholder: "e.g. ultramarine, burnt sienna" },
     ],
+    statuses: ["Sketch", "In progress", "Finished", "Set aside"],
   },
 ];
 
@@ -75,6 +79,11 @@ export function craftForCollection(kind: CollectionKind): CraftProfile | undefin
 /** Craft-specific fields for a collection (empty for the general craft). */
 export function fieldsForCollection(kind: CollectionKind): CraftField[] {
   return craftForCollection(kind)?.fields ?? [];
+}
+
+/** Craft-specific status vocabulary for a collection. */
+export function statusesForCollection(kind: CollectionKind): string[] {
+  return craftForCollection(kind)?.statuses ?? [];
 }
 
 /** The definition (label/accent) for a collection kind. */
