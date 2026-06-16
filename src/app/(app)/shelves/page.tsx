@@ -92,6 +92,28 @@ export default function ShelvesPage() {
             </Link>
           </div>
         </div>
+
+        <div className="mt-6 border-t border-rule pt-6">
+          <h2 className="mb-3 font-mono text-xs uppercase tracking-wide text-fg-muted">
+            Watercolor depth
+          </h2>
+          <Link
+            href="/watercolor"
+            className="block rounded-card border border-rule-soft bg-paper-white p-4 transition-colors duration-1 ease-ease hover:bg-paper-wash"
+          >
+            <span className="flex items-center gap-2">
+              <span
+                className="inline-block h-2.5 w-2.5 rounded-pill"
+                style={{ background: "var(--wine)" }}
+                aria-hidden
+              />
+              <span className="smallcaps text-[13px] text-fg-quiet">Color studies</span>
+            </span>
+            <div className="meta mt-3 text-[11px] text-fg-faint">
+              Wash scale · value · harmony
+            </div>
+          </Link>
+        </div>
       </section>
     </>
   );
