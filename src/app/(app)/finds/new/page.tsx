@@ -153,7 +153,7 @@ export default function NewSpecimenPage() {
     <>
       <AppHeader title="Document a find" />
       
-      <form onSubmit={handleSubmit} className="px-5 py-4 pb-24 md:mx-auto md:max-w-2xl md:pb-8">
+      <form onSubmit={handleSubmit} className="px-5 py-4 md:mx-auto md:max-w-2xl">
         <div className="space-y-4">
           <div>
             <label className="mb-2 block font-mono text-xs uppercase tracking-wide text-fg-muted">
@@ -431,7 +431,7 @@ export default function NewSpecimenPage() {
           </div>
         </div>
 
-        <div className="fixed bottom-20 left-0 right-0 bg-gradient-to-t from-paper via-paper to-transparent px-5 pb-4 pt-8 md:static md:mt-6 md:bg-none md:p-0">
+        <div className="mt-8">
           <div className="flex gap-3">
             <Link
               href="/finds"

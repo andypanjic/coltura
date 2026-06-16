@@ -29,7 +29,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Link>
           </header>
 
-          <main className="flex-1">{children}</main>
+          {/* pb clears the fixed bottom nav on mobile; desktop uses the sidebar */}
+          <main className="flex-1 pb-24 md:pb-0">{children}</main>
 
           {/* Mobile bottom nav — desktop navigates from the sidebar. */}
           <div className="md:hidden">

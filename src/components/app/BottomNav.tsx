@@ -15,7 +15,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky bottom-0 z-40">
+    <nav className="fixed inset-x-0 bottom-0 z-40">
       {/* protection gradient — content fades into the bar as it scrolls under */}
       <div className="pointer-events-none absolute inset-x-0 -top-6 h-6 bg-gradient-to-t from-paper to-transparent" />
       <div className="border-t border-rule-strong bg-paper shadow-[0_-3px_22px_-8px_rgba(27,26,23,0.16)]">
