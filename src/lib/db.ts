@@ -9,6 +9,7 @@
  */
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import type { Specimen, Material } from "./types";
+import type { CraftProfile } from "./crafts";
 
 interface ColturaDB extends DBSchema {
   specimens: {
@@ -20,10 +21,14 @@ interface ColturaDB extends DBSchema {
     key: string;
     value: Material;
   };
+  crafts: {
+    key: string;
+    value: CraftProfile;
+  };
 }
 
 const DB_NAME = "coltura";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let dbPromise: Promise<IDBPDatabase<ColturaDB>> | null = null;
 
@@ -33,11 +38,17 @@ function getDB() {
   }
   if (!dbPromise) {
     dbPromise = openDB<ColturaDB>(DB_NAME, DB_VERSION, {
-      upgrade(db) {
-        const specimens = db.createObjectStore("specimens", { keyPath: "id" });
-        specimens.createIndex("by-collection", "collection");
-        specimens.createIndex("by-updated", "updatedAt");
-        db.createObjectStore("materials", { keyPath: "id" });
+      upgrade(db, oldVersion) {
+        if (oldVersion < 1) {
+          const specimens = db.createObjectStore("specimens", { keyPath: "id" });
+          specimens.createIndex("by-collection", "collection");
+          specimens.createIndex("by-updated", "updatedAt");
+          db.createObjectStore("materials", { keyPath: "id" });
+        }
+        if (oldVersion < 2) {
+          // User-created craft profiles (knitting + watercolor stay built-in).
+          db.createObjectStore("crafts", { keyPath: "id" });
+        }
       },
     });
   }
@@ -75,6 +86,19 @@ export async function putMaterial(m: Material): Promise<void> {
   await (await getDB()).put("materials", m);
 }
 
+/** User-created craft profiles (merged with the built-in defaults at runtime). */
+export async function allCustomCrafts(): Promise<CraftProfile[]> {
+  return (await getDB()).getAll("crafts");
+}
+
+export async function putCustomCraft(c: CraftProfile): Promise<void> {
+  await (await getDB()).put("crafts", c);
+}
+
+export async function deleteCustomCraft(id: string): Promise<void> {
+  await (await getDB()).delete("crafts", id);
+}
+
 /** One-tap export — the whole archive as a single JSON blob. */
 export async function exportArchive(): Promise<Blob> {
   const db = await getDB();
@@ -83,6 +107,7 @@ export async function exportArchive(): Promise<Blob> {
     exportedAt: new Date().toISOString(),
     specimens: await db.getAll("specimens"),
     materials: await db.getAll("materials"),
+    crafts: await db.getAll("crafts"),
   };
   return new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
 }
@@ -90,6 +115,7 @@ export async function exportArchive(): Promise<Blob> {
 export interface ImportResult {
   specimens: number;
   materials: number;
+  crafts: number;
 }
 
 /**
@@ -98,7 +124,7 @@ export interface ImportResult {
  * archive is safe and re-importing is idempotent. Throws on malformed input.
  */
 export async function importArchive(json: string): Promise<ImportResult> {
-  let data: { specimens?: Specimen[]; materials?: Material[] };
+  let data: { specimens?: Specimen[]; materials?: Material[]; crafts?: CraftProfile[] };
   try {
     data = JSON.parse(json);
   } catch {
@@ -111,6 +137,7 @@ export async function importArchive(json: string): Promise<ImportResult> {
   const db = await getDB();
   let specimens = 0;
   let materials = 0;
+  let crafts = 0;
 
   if (Array.isArray(data.specimens)) {
     const tx = db.transaction("specimens", "readwrite");
@@ -134,5 +161,16 @@ export async function importArchive(json: string): Promise<ImportResult> {
     await tx.done;
   }
 
-  return { specimens, materials };
+  if (Array.isArray(data.crafts)) {
+    const tx = db.transaction("crafts", "readwrite");
+    for (const c of data.crafts) {
+      if (c && typeof c.id === "string") {
+        await tx.store.put(c);
+        crafts++;
+      }
+    }
+    await tx.done;
+  }
+
+  return { specimens, materials, crafts };
 }

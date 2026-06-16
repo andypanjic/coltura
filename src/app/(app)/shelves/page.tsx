@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AppHeader } from "@/components/app/AppHeader";
-import { COLLECTIONS } from "@/lib/collections";
+import { useCrafts } from "@/components/app/CraftsProvider";
 import { allSpecimens } from "@/lib/db";
 import type { Specimen } from "@/lib/types";
 
 /** Shelves — the collections, for browsing groupings. Color encodes the craft. */
 export default function ShelvesPage() {
+  const { collections } = useCrafts();
   const [specimens, setSpecimens] = useState<Specimen[]>([]);
 
   useEffect(() => {
@@ -21,10 +22,10 @@ export default function ShelvesPage() {
 
   return (
     <>
-      <AppHeader title="Shelves" meta={`${COLLECTIONS.length} collections`} />
+      <AppHeader title="Shelves" meta={`${collections.length} collections`} />
       <section className="px-5 py-4">
         <div className="grid grid-cols-2 gap-3">
-          {COLLECTIONS.map((c) => {
+          {collections.map((c) => {
             const count = countFor(c.kind);
             return (
               <div
@@ -41,6 +42,14 @@ export default function ShelvesPage() {
               </div>
             );
           })}
+
+          <Link
+            href="/crafts/new"
+            className="flex min-h-[7rem] flex-col items-center justify-center gap-1 rounded-card border border-dashed border-rule-strong bg-paper-edge p-4 text-center transition-colors duration-1 ease-ease hover:bg-paper-wash"
+          >
+            <span className="font-display text-2xl leading-none text-fg-muted">+</span>
+            <span className="smallcaps text-[12px] text-fg-quiet">Add a hobby</span>
+          </Link>
         </div>
 
         <div className="mt-6 border-t border-rule pt-6">

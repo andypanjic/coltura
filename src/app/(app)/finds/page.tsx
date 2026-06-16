@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/app/AppHeader";
 import { SpecimenCard } from "@/components/app/SpecimenCard";
 import { OrchidSpray } from "@/components/brand/Brand";
-import { COLLECTIONS } from "@/lib/collections";
+import { useCrafts } from "@/components/app/CraftsProvider";
 import { allSpecimens } from "@/lib/db";
 import type { Specimen } from "@/lib/types";
 
@@ -17,8 +17,8 @@ function CategoryChips({
   onCategoryChange: (category: string) => void;
   specimenCount: number;
 }) {
-  const chips = ["All", ...COLLECTIONS.map(c => c.label)];
-  
+  const { chips } = useCrafts();
+
   return (
     <div className="-mx-5 mt-4 flex gap-2 overflow-x-auto px-5 pb-1">
       {chips.map((chip) => {
@@ -42,37 +42,30 @@ function CategoryChips({
 }
 
 export default function FindsPage() {
+  const { collections } = useCrafts();
   const [specimens, setSpecimens] = useState<Specimen[]>([]);
-  const [filteredSpecimens, setFilteredSpecimens] = useState<Specimen[]>([]);
   const [activeCategory, setActiveCategory] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadSpecimens = async () => {
       try {
-        const data = await allSpecimens();
-        setSpecimens(data);
-        setFilteredSpecimens(data);
+        setSpecimens(await allSpecimens());
       } catch (error) {
         console.error("Failed to load specimens:", error);
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     loadSpecimens();
   }, []);
 
-  useEffect(() => {
-    if (activeCategory === "All") {
-      setFilteredSpecimens(specimens);
-    } else {
-      const collection = COLLECTIONS.find(c => c.label === activeCategory);
-      if (collection) {
-        setFilteredSpecimens(specimens.filter(s => s.collection === collection.kind));
-      }
-    }
-  }, [activeCategory, specimens]);
+  const activeKind =
+    activeCategory === "All" ? null : collections.find((c) => c.label === activeCategory)?.kind;
+  const filteredSpecimens = activeKind
+    ? specimens.filter((s) => s.collection === activeKind)
+    : specimens;
 
   const collectionCount = new Set(specimens.map(s => s.collection)).size;
   const metaText =

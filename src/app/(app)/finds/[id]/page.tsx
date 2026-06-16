@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import { COLLECTIONS, fieldsForCollection, statusesForCollection } from "@/lib/collections";
+import { useCrafts } from "@/components/app/CraftsProvider";
 import { getSpecimen, putSpecimen } from "@/lib/db";
 import type { Specimen } from "@/lib/types";
 
 export default function SpecimenDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params?.id;
+  const { collectionDef, fieldsForCollection, statusesForCollection } = useCrafts();
 
   const [specimen, setSpecimen] = useState<Specimen | null | undefined>(undefined);
   const [summary, setSummary] = useState("");
@@ -81,7 +82,7 @@ export default function SpecimenDetailPage() {
     );
   }
 
-  const collection = COLLECTIONS.find((c) => c.kind === specimen.collection);
+  const collection = collectionDef(specimen.collection);
   const primary = specimen.media[0];
   const dateStr = specimen.date
     ? new Date(specimen.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })

@@ -4,13 +4,14 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AppHeader } from "@/components/app/AppHeader";
-import { COLLECTIONS, fieldsForCollection, statusesForCollection } from "@/lib/collections";
+import { useCrafts } from "@/components/app/CraftsProvider";
 import { putSpecimen } from "@/lib/db";
 import { extractPaletteFromFile } from "@/lib/palette";
 import type { Specimen, PaletteColor, MediaItem, CollectionKind, Note } from "@/lib/types";
 
 export default function NewSpecimenPage() {
   const router = useRouter();
+  const { collections, fieldsForCollection, statusesForCollection } = useCrafts();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const noteFileInputRef = useRef<HTMLInputElement>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -258,7 +259,7 @@ export default function NewSpecimenPage() {
               onChange={(e) => setFormData({ ...formData, collection: e.target.value as any })}
               className="w-full rounded-input border border-rule bg-paper-white px-3 py-2 text-sm focus:border-lagoon focus:outline-none"
             >
-              {COLLECTIONS.map((col) => (
+              {collections.map((col) => (
                 <option key={col.kind} value={col.kind}>
                   {col.label}
                 </option>
@@ -288,7 +289,7 @@ export default function NewSpecimenPage() {
           {craftDefs.length > 0 && (
             <div className="space-y-3 rounded-card border border-rule-soft bg-paper-edge p-3">
               <p className="font-mono text-[11px] uppercase tracking-wide text-fg-faint">
-                {COLLECTIONS.find((c) => c.kind === formData.collection)?.label} details
+                {collections.find((c) => c.kind === formData.collection)?.label} details
               </p>
               {craftDefs.map((d) => (
                 <label key={d.key} className="block">

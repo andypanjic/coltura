@@ -18,7 +18,7 @@ export function ImportButton() {
     try {
       const result = await importArchive(await file.text());
       setMsg(
-        `Restored ${result.specimens} specimen${result.specimens === 1 ? "" : "s"} and ${result.materials} material${result.materials === 1 ? "" : "s"}.`,
+        `Restored ${result.specimens} specimen${result.specimens === 1 ? "" : "s"}, ${result.materials} material${result.materials === 1 ? "" : "s"}${result.crafts ? `, and ${result.crafts} hobb${result.crafts === 1 ? "y" : "ies"}` : ""}.`,
       );
     } catch (err) {
       setMsg(err instanceof Error ? err.message : "Import failed.");

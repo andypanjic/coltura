@@ -1,9 +1,12 @@
+"use client";
+
 import Link from "next/link";
-import { COLLECTIONS } from "@/lib/collections";
+import { useCrafts } from "@/components/app/CraftsProvider";
 import type { Specimen } from "@/lib/types";
 
 export function SpecimenCard({ specimen }: { specimen: Specimen }) {
-  const collection = COLLECTIONS.find(c => c.kind === specimen.collection);
+  const { collectionDef } = useCrafts();
+  const collection = collectionDef(specimen.collection);
   const primaryImage = specimen.media[0];
   const dateStr = specimen.date ? new Date(specimen.date).toLocaleDateString('en-US', { 
     month: 'short', 

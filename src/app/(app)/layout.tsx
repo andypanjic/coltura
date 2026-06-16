@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BottomNav } from "@/components/app/BottomNav";
 import { SideNav } from "@/components/app/SideNav";
+import { CraftsProvider } from "@/components/app/CraftsProvider";
 import { Wordmark } from "@/components/brand/Brand";
 
 /**
@@ -12,6 +13,7 @@ import { Wordmark } from "@/components/brand/Brand";
  */
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
+    <CraftsProvider>
     <div className="md:flex">
       <SideNav />
       <div className="flex-1">
@@ -36,5 +38,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     </div>
+    </CraftsProvider>
   );
 }
