@@ -434,7 +434,7 @@ export default function NewSpecimenPage() {
           <div className="flex gap-3">
             <Link
               href="/finds"
-              className="flex-1 rounded-input border border-rule bg-paper py-2.5 text-center text-sm font-medium transition-colors duration-1 ease-ease hover:bg-paper-wash"
+              className="flex-1 rounded-input border border-rule-strong bg-paper-white py-2.5 text-center text-sm font-medium transition-colors duration-1 ease-ease hover:bg-paper-wash"
             >
               Cancel
             </Link>

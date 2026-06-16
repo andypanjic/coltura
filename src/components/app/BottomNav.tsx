@@ -18,7 +18,7 @@ export function BottomNav() {
     <nav className="sticky bottom-0 z-40">
       {/* protection gradient — content fades into the bar as it scrolls under */}
       <div className="pointer-events-none absolute inset-x-0 -top-6 h-6 bg-gradient-to-t from-paper to-transparent" />
-      <div className="border-t border-rule bg-paper/95 backdrop-blur">
+      <div className="border-t border-rule-strong bg-paper shadow-[0_-3px_22px_-8px_rgba(27,26,23,0.16)]">
         <div className="relative mx-auto flex max-w-[480px] items-stretch justify-around px-2 pb-[env(safe-area-inset-bottom)]">
           {TABS.map(({ href, label, Icon }, i) => {
             const active = pathname?.startsWith(href);

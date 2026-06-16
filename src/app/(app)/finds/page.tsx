@@ -30,7 +30,7 @@ function CategoryChips({
             className={`smallcaps whitespace-nowrap rounded-pill border px-3 py-1.5 text-[13px] transition-colors duration-1 ease-ease ${
               isActive
                 ? "border-lagoon-strong bg-lagoon text-fg-on-ink"
-                : "border-rule bg-paper text-fg-muted hover:bg-paper-wash"
+                : "border-rule-strong bg-paper-white text-fg-muted hover:bg-paper-wash"
             }`}
           >
             {chip}
