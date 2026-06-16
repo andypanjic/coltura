@@ -152,7 +152,7 @@ export default function SearchPage() {
               <p className="font-display text-lg italic text-fg-muted">Loading specimens…</p>
             </div>
           ) : !showResults ? (
-            <div className="rounded-card border border-dashed border-rule-strong bg-paper-edge px-6 py-14 text-center">
+            <div className="mx-auto max-w-lg rounded-card border border-dashed border-rule-strong bg-paper-edge px-6 py-14 text-center">
               <OrchidSpray size={46} className="mx-auto mb-4 block opacity-50" />
               <p className="font-display text-lg italic text-fg-muted">
                 What are you looking for?

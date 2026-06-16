@@ -24,7 +24,7 @@ export default function ShelvesPage() {
     <>
       <AppHeader title="Shelves" meta={`${collections.length} collections`} />
       <section className="px-5 py-4">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           {collections.map((c) => {
             const count = countFor(c.kind);
             return (
@@ -56,7 +56,7 @@ export default function ShelvesPage() {
           <h2 className="mb-3 font-mono text-xs uppercase tracking-wide text-fg-muted">
             Knitting depth
           </h2>
-          <div className="space-y-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <Link
               href="/stash"
               className="block rounded-card border border-rule-soft bg-paper-white p-4 transition-colors duration-1 ease-ease hover:bg-paper-wash"
@@ -97,10 +97,11 @@ export default function ShelvesPage() {
           <h2 className="mb-3 font-mono text-xs uppercase tracking-wide text-fg-muted">
             Watercolor depth
           </h2>
-          <Link
-            href="/watercolor"
-            className="block rounded-card border border-rule-soft bg-paper-white p-4 transition-colors duration-1 ease-ease hover:bg-paper-wash"
-          >
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Link
+              href="/watercolor"
+              className="block rounded-card border border-rule-soft bg-paper-white p-4 transition-colors duration-1 ease-ease hover:bg-paper-wash"
+            >
             <span className="flex items-center gap-2">
               <span
                 className="inline-block h-2.5 w-2.5 rounded-pill"
@@ -112,7 +113,8 @@ export default function ShelvesPage() {
             <div className="meta mt-3 text-[11px] text-fg-faint">
               Wash scale · value · harmony
             </div>
-          </Link>
+            </Link>
+          </div>
         </div>
       </section>
     </>

@@ -87,11 +87,11 @@ export default function FindsPage() {
 
       <section className="px-5 py-4">
         {isLoading ? (
-          <div className="rounded-card border border-dashed border-rule-strong bg-paper-edge px-6 py-12 text-center">
+          <div className="mx-auto max-w-lg rounded-card border border-dashed border-rule-strong bg-paper-edge px-6 py-12 text-center">
             <p className="font-display text-lg italic text-fg-muted">Loading...</p>
           </div>
         ) : filteredSpecimens.length === 0 ? (
-          <div className="rounded-card border border-dashed border-rule-strong bg-paper-edge px-6 py-14 text-center">
+          <div className="mx-auto max-w-lg rounded-card border border-dashed border-rule-strong bg-paper-edge px-6 py-14 text-center">
             <OrchidSpray size={46} className="mx-auto mb-4 block opacity-50" />
             <p className="font-display text-lg italic text-fg-muted">
               {activeCategory === "All" ? "Nothing kept yet." : `No ${activeCategory.toLowerCase()} yet.`}

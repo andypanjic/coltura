@@ -17,7 +17,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="md:flex">
       <SideNav />
       <div className="flex-1">
-        <div className="mx-auto flex min-h-dvh w-full flex-col md:max-w-5xl">
+        <div className="mx-auto flex min-h-dvh w-full flex-col md:max-w-4xl">
           {/* Mobile brand bar — on desktop the sidebar carries the wordmark. */}
           <header className="sticky top-0 z-40 flex items-center border-b border-rule-strong bg-paper/95 px-5 py-3 shadow-[0_3px_20px_-10px_rgba(27,26,23,0.14)] backdrop-blur md:hidden">
             <Link
