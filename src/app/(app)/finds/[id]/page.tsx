@@ -95,7 +95,7 @@ export default function SpecimenDetailPage() {
   const statusOptions = statusesForCollection(specimen.collection);
 
   return (
-    <div className="pb-24">
+    <div className="pb-24 md:mx-auto md:max-w-2xl md:pb-10">
       <div className="px-5 pt-4">
         <Link href="/finds" className="inline-flex items-center gap-1.5 font-mono text-xs uppercase text-fg-muted hover:text-ink">
           <ArrowLeft size={14} strokeWidth={1.7} /> Finds

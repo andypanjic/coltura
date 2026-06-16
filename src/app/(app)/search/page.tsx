@@ -178,7 +178,7 @@ export default function SearchPage() {
               <p className="mb-4 font-mono text-xs uppercase text-fg-muted">
                 {results.length} {results.length === 1 ? 'match' : 'matches'}
               </p>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {results.map((specimen) => (
                   <SpecimenCard key={specimen.id} specimen={specimen} />
                 ))}

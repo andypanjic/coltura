@@ -7,7 +7,7 @@ export default function YouPage() {
   return (
     <>
       <AppHeader title="You" />
-      <section className="px-5 py-4">
+      <section className="px-5 py-4 md:mx-auto md:max-w-2xl">
         <div className="rounded-card border border-rule-soft bg-paper-white p-4">
           <h2 className="font-display text-[17px] text-ink-strong">Your archive</h2>
           <p className="mt-1 text-sm leading-body text-fg-quiet">

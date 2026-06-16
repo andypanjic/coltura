@@ -110,7 +110,7 @@ export default function FindsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredSpecimens.map((specimen) => (
               <SpecimenCard key={specimen.id} specimen={specimen} />
             ))}

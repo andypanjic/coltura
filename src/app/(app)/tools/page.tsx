@@ -372,7 +372,7 @@ export default function ToolsPage() {
   return (
     <>
       <AppHeader title="Tools" meta="Knitting math" />
-      <div className="space-y-4 px-5 py-4 pb-24">
+      <div className="space-y-4 px-5 py-4 pb-24 md:mx-auto md:max-w-2xl">
         <CastOnCalc />
         <GaugeConverter />
         <YardageEstimator />
