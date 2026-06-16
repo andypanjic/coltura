@@ -15,7 +15,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="md:flex">
       <SideNav />
       <div className="flex-1">
-        <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col border-x border-rule md:max-w-5xl md:border-x-0">
+        <div className="mx-auto flex min-h-dvh w-full flex-col md:max-w-5xl">
           {/* Mobile brand bar — on desktop the sidebar carries the wordmark. */}
           <header className="sticky top-0 z-40 flex items-center border-b border-rule-strong bg-paper/95 px-5 py-3 shadow-[0_3px_20px_-10px_rgba(27,26,23,0.14)] backdrop-blur md:hidden">
             <Link
@@ -23,7 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               aria-label="Coltura — home"
               className="transition-opacity duration-1 hover:opacity-80"
             >
-              <Wordmark size={20} />
+              <Wordmark size={22} />
             </Link>
           </header>
 

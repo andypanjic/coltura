@@ -80,7 +80,7 @@ export function Wordmark({ size = 26, className }: { size?: number; className?: 
       <OrchidSpray size={size} />
       <span
         className="font-display text-ink-strong tracking-tight"
-        style={{ fontWeight: 500, fontSize: size }}
+        style={{ fontWeight: 600, fontSize: size }}
       >
         Coltura
       </span>
